@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.king2.log.mapper.AccessLogMapper">
+  <resultMap id="BaseResultMap" type="org.king2.log.entity.AccessLog">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="ACCESS_IP" jdbcType="VARCHAR" property="accessIp" />
+    <result column="ACCESS_TYPE" jdbcType="INTEGER" property="accessType" />
+    <result column="ACCESS_PATH" jdbcType="VARCHAR" property="accessPath" />
+    <result column="ACCESS_PARAMETER" jdbcType="VARCHAR" property="accessParameter" />
+    <result column="ACCESS_AREA" jdbcType="VARCHAR" property="accessArea" />
+    <result column="ACCESS_USER_ID" jdbcType="BIGINT" property="accessUserId" />
+    <result column="ACCESS_DATE" jdbcType="TIMESTAMP" property="accessDate" />
+    <result column="ACCESS_LOG_TYPE" jdbcType="INTEGER" property="accessLogType" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="org.king2.log.entity.AccessLog">
+    <result column="ACCESS_RESULT" jdbcType="LONGVARCHAR" property="accessResult" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ACCESS_IP, ACCESS_TYPE, ACCESS_PATH, ACCESS_PARAMETER, ACCESS_AREA, ACCESS_USER_ID,
+    ACCESS_DATE, ACCESS_LOG_TYPE
+  </sql>
+  <sql id="Blob_Column_List">
+    ACCESS_RESULT
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ACCESS_LOG
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from ACCESS_LOG
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="org.king2.log.entity.AccessLog">
+    insert into ACCESS_LOG (ID, ACCESS_IP, ACCESS_TYPE,
+      ACCESS_PATH, ACCESS_PARAMETER, ACCESS_AREA,
+      ACCESS_USER_ID, ACCESS_DATE, ACCESS_LOG_TYPE,
+      ACCESS_RESULT)
+    values (#{id,jdbcType=BIGINT}, #{accessIp,jdbcType=VARCHAR}, #{accessType,jdbcType=INTEGER},
+      #{accessPath,jdbcType=VARCHAR}, #{accessParameter,jdbcType=VARCHAR}, #{accessArea,jdbcType=VARCHAR},
+      #{accessUserId,jdbcType=BIGINT}, #{accessDate,jdbcType=TIMESTAMP}, #{accessLogType,jdbcType=INTEGER},
+      #{accessResult,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="org.king2.log.entity.AccessLog">
+    insert into ACCESS_LOG
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="accessIp != null">
+        ACCESS_IP,
+      </if>
+      <if test="accessType != null">
+        ACCESS_TYPE,
+      </if>
+      <if test="accessPath != null">
+        ACCESS_PATH,
+      </if>
+      <if test="accessParameter != null">
+        ACCESS_PARAMETER,
+      </if>
+      <if test="accessArea != null">
+        ACCESS_AREA,
+      </if>
+      <if test="accessUserId != null">
+        ACCESS_USER_ID,
+      </if>
+      <if test="accessDate != null">
+        ACCESS_DATE,
+      </if>
+      <if test="accessLogType != null">
+        ACCESS_LOG_TYPE,
+      </if>
+      <if test="accessResult != null">
+        ACCESS_RESULT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="accessIp != null">
+        #{accessIp,jdbcType=VARCHAR},
+      </if>
+      <if test="accessType != null">
+        #{accessType,jdbcType=INTEGER},
+      </if>
+      <if test="accessPath != null">
+        #{accessPath,jdbcType=VARCHAR},
+      </if>
+      <if test="accessParameter != null">
+        #{accessParameter,jdbcType=VARCHAR},
+      </if>
+      <if test="accessArea != null">
+        #{accessArea,jdbcType=VARCHAR},
+      </if>
+      <if test="accessUserId != null">
+        #{accessUserId,jdbcType=BIGINT},
+      </if>
+      <if test="accessDate != null">
+        #{accessDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="accessLogType != null">
+        #{accessLogType,jdbcType=INTEGER},
+      </if>
+      <if test="accessResult != null">
+        #{accessResult,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.king2.log.entity.AccessLog">
+    update ACCESS_LOG
+    <set>
+      <if test="accessIp != null">
+        ACCESS_IP = #{accessIp,jdbcType=VARCHAR},
+      </if>
+      <if test="accessType != null">
+        ACCESS_TYPE = #{accessType,jdbcType=INTEGER},
+      </if>
+      <if test="accessPath != null">
+        ACCESS_PATH = #{accessPath,jdbcType=VARCHAR},
+      </if>
+      <if test="accessParameter != null">
+        ACCESS_PARAMETER = #{accessParameter,jdbcType=VARCHAR},
+      </if>
+      <if test="accessArea != null">
+        ACCESS_AREA = #{accessArea,jdbcType=VARCHAR},
+      </if>
+      <if test="accessUserId != null">
+        ACCESS_USER_ID = #{accessUserId,jdbcType=BIGINT},
+      </if>
+      <if test="accessDate != null">
+        ACCESS_DATE = #{accessDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="accessLogType != null">
+        ACCESS_LOG_TYPE = #{accessLogType,jdbcType=INTEGER},
+      </if>
+      <if test="accessResult != null">
+        ACCESS_RESULT = #{accessResult,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="org.king2.log.entity.AccessLog">
+    update ACCESS_LOG
+    set ACCESS_IP = #{accessIp,jdbcType=VARCHAR},
+      ACCESS_TYPE = #{accessType,jdbcType=INTEGER},
+      ACCESS_PATH = #{accessPath,jdbcType=VARCHAR},
+      ACCESS_PARAMETER = #{accessParameter,jdbcType=VARCHAR},
+      ACCESS_AREA = #{accessArea,jdbcType=VARCHAR},
+      ACCESS_USER_ID = #{accessUserId,jdbcType=BIGINT},
+      ACCESS_DATE = #{accessDate,jdbcType=TIMESTAMP},
+      ACCESS_LOG_TYPE = #{accessLogType,jdbcType=INTEGER},
+      ACCESS_RESULT = #{accessResult,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.king2.log.entity.AccessLog">
+    update ACCESS_LOG
+    set ACCESS_IP = #{accessIp,jdbcType=VARCHAR},
+      ACCESS_TYPE = #{accessType,jdbcType=INTEGER},
+      ACCESS_PATH = #{accessPath,jdbcType=VARCHAR},
+      ACCESS_PARAMETER = #{accessParameter,jdbcType=VARCHAR},
+      ACCESS_AREA = #{accessArea,jdbcType=VARCHAR},
+      ACCESS_USER_ID = #{accessUserId,jdbcType=BIGINT},
+      ACCESS_DATE = #{accessDate,jdbcType=TIMESTAMP},
+      ACCESS_LOG_TYPE = #{accessLogType,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
