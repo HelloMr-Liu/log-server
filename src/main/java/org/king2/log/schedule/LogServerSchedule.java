@@ -86,10 +86,7 @@ public class LogServerSchedule {
                             throw e;
                         }
                         BulkResponse bulk = restHighLevelClient.bulk(request, RequestOptions.DEFAULT);
-                        if(bulk.status().getStatus()==200){
-                            countNumber=0;
-                            backupLog.clear();
-                        }
+                        if(bulk.status().getStatus()==200){countNumber=0;backupLog.clear();}
                     }
                 }
 
@@ -105,7 +102,7 @@ public class LogServerSchedule {
                         throw e;
                     }
                     BulkResponse bulk = restHighLevelClient.bulk(request, RequestOptions.DEFAULT);
-                    if(bulk.status().getStatus()==200)backupLog.clear();
+                    if(bulk.status().getStatus()==200){backupLog.clear();}
                 }
             }
 
