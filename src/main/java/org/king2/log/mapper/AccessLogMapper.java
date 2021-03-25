@@ -16,4 +16,8 @@ public interface AccessLogMapper {
     int updateByPrimaryKeyWithBLOBs(AccessLog record);
 
     int updateByPrimaryKey(AccessLog record);
+
+
+
+
 }

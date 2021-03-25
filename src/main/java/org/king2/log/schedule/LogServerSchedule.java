@@ -11,6 +11,7 @@ import org.king2.log.config.SystemFilterConfiguration;
 import org.king2.log.constant.LogAccessTypeEnum;
 import org.king2.log.constant.LogTypeEnum;
 import org.king2.log.entity.AccessLog;
+import org.king2.log.mapper.AccessLogExtendMapper;
 import org.king2.log.utils.AddressUtils;
 import org.king2.log.utils.ApplicationUtil;
 import org.king2.log.utils.IdUtil;
@@ -44,8 +45,11 @@ public class LogServerSchedule {
      */
     private static final ConcurrentLinkedDeque<AccessLog> logInfo=new ConcurrentLinkedDeque<>();
 
+
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+    @Autowired
+    private AccessLogExtendMapper accessLogExtendMapper;
 
     /**
      *  每隔一分钟执行一次
@@ -54,18 +58,55 @@ public class LogServerSchedule {
     public void refreshContainer() {
         logger.info("开启日志刷新操作！"+logInfo.size()+"--"+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         List<AccessLog> backupLog=new ArrayList<>();
+        int countNumber=0;
+        boolean insertDataBase=false;
         try{
 
             if(logInfo.peekFirst()!=null){
                 //创建一个批量插入请求对象
                 BulkRequest request=new BulkRequest();
                 while (logInfo.peekFirst()!=null){
+                    countNumber++;
                     AccessLog accessLog = logInfo.pollFirst();
-                    backupLog.add(accessLog);
+                    if(accessLog.getIsInsert().intValue()==0){
+                        accessLog.setIsInsert(1);
+                        backupLog.add(accessLog);
+                    }
                     request.add(new IndexRequest("log-server").id(accessLog.getId().toString()).timeout("1s").source(JSON.toJSONString(accessLog),XContentType.JSON));
+                    //每次批量如果超过500数量日志就先插入一次
+                    if(backupLog.size()>500){
+
+                        try{
+                            accessLogExtendMapper.batchInsert(backupLog);
+                        }catch (Exception e){
+                            //获取异常信息
+                            String exceptionMessage= ApplicationUtil.getExceptionMessage(e);
+                            logger.error("异常信息："+exceptionMessage);
+                            insertDataBase=true;
+                            throw e;
+                        }
+                        BulkResponse bulk = restHighLevelClient.bulk(request, RequestOptions.DEFAULT);
+                        if(bulk.status().getStatus()==200){
+                            countNumber=0;
+                            backupLog.clear();
+                        }
+                    }
                 }
-                BulkResponse bulk = restHighLevelClient.bulk(request, RequestOptions.DEFAULT);
-                if(bulk.status().getStatus()==200)backupLog.clear();
+
+                //每次批量如果超过500数量日志就先插入一次
+                if(backupLog.size()>0){
+                    try{
+                        accessLogExtendMapper.batchInsert(backupLog);
+                    }catch (Exception e){
+                        //获取异常信息
+                        String exceptionMessage= ApplicationUtil.getExceptionMessage(e);
+                        logger.error("异常信息："+exceptionMessage);
+                        insertDataBase=true;
+                        throw e;
+                    }
+                    BulkResponse bulk = restHighLevelClient.bulk(request, RequestOptions.DEFAULT);
+                    if(bulk.status().getStatus()==200)backupLog.clear();
+                }
             }
 
         }catch (Exception e){
@@ -76,11 +117,12 @@ public class LogServerSchedule {
         }finally {
             if(backupLog.size()>0){
                 //将备份日志信息重新加入到容器中等待下一次添加到ES中
-                backupLog.forEach(
-                    e->{
-                        logInfo.addLast(e);
+                for(AccessLog e:backupLog){
+                    if(insertDataBase){
+                        e.setIsInsert(0); //代表没有插入到数据库数据
                     }
-                );
+                    logInfo.addLast(e);
+                }
             }
         }
     }

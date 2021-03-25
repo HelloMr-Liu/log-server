@@ -59,6 +59,20 @@ public class AccessLog {
      */
     private String accessResult;
 
+
+    /**
+     * 判断是否已经插入 1：插入到数据库  0：未插入到ES
+     */
+    private Integer isInsert=0;
+
+    public Integer getIsInsert() {
+        return isInsert;
+    }
+
+    public void setIsInsert(Integer isInsert) {
+        this.isInsert = isInsert;
+    }
+
     public Long getId() {
         return id;
     }
