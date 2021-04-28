@@ -2,10 +2,14 @@ package org.king2.log;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.king2.log.entity.vo.LoginSuccessfulInfoVo;
+import org.king2.log.utils.IdUtil;
 import org.king2.log.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.UUID;
 
 /**
  * 描述:缓存测试
@@ -21,7 +25,8 @@ public class RedisTest {
 
     @Test
     public void add(){
-        redisUtil.setex("lubwenniubi","lubwenniubi",60);
-        redisUtil.setex("lubwenniubi2","lubwenniubi2",60);
+        String  uuId=UUID.randomUUID().toString();
+        System.out.println();
+        redisUtil.set(uuId,new LoginSuccessfulInfoVo(IdUtil.nextId(),"刘梓江","15717007490"));
     }
 }

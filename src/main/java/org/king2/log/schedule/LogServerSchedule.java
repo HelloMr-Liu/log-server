@@ -45,7 +45,6 @@ public class LogServerSchedule {
      */
     private static final ConcurrentLinkedDeque<AccessLog> logInfo=new ConcurrentLinkedDeque<>();
 
-
     @Autowired
     private RestHighLevelClient restHighLevelClient;
     @Autowired
